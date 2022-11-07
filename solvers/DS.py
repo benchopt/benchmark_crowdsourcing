@@ -1,5 +1,5 @@
 from benchopt import BaseSolver, safe_import_context
-from benchopt.stopping_criterion import SufficientProgressCriterion
+from benchopt.stopping_criterion import SufficientDescentCriterion
 
 with safe_import_context() as import_ctx:
     import numpy as np
@@ -11,9 +11,9 @@ class Solver(BaseSolver):
     name = "DawidSkene"
     install_cmd = "conda"
     requirements = ["numpy"]
-    stopping_strategy = "callback"
-    stopping_criterion = SufficientProgressCriterion(
-        patience=10, strategy="callback"
+    parameters = {"maxiter": [10], "epsilon": [1e-5]}
+    stopping_criterion = SufficientDescentCriterion(
+        patience=1, strategy="tolerance"
     )
 
     def set_objective(
@@ -85,20 +85,27 @@ class Solver(BaseSolver):
     def log_likelihood(self):
         return np.log(np.sum(self.denom_e_step))
 
-    def run(self, callback):
+    def run_aggregation(self):
         self.get_crowd_matrix()
         self.init_T()
         k = 0
-        while callback(self.T):
+        ll0 = 1e6
+        while k < self.maxiter:
             self.m_step()
             self.e_step()
             ll = self.log_likelihood()
+            if abs(ll0 - ll) < self.epsilon:
+                break
+            ll0 = ll
             k += 1
         self.loglikelihood_value = ll
         self.counter = k
 
+    def run(self, tol):
+        self.run_aggregation()
+
     def get_result(self):
-        return self.T
+        return {"yhat": self.T, "model": None}
 
     @staticmethod
     def get_next(stop_val):

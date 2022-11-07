@@ -11,7 +11,7 @@ class Objective(BaseObjective):
 
     def get_one_solution(self):
         # Return one solution. This should be compatible with 'self.compute'.
-        return np.zeros(len(self.votes))
+        return {"yhat": np.zeros(len(self.votes)), "model": None}
 
     def set_data(
         self,
@@ -35,10 +35,11 @@ class Objective(BaseObjective):
         self.n_classes = n_classes
         self.n_workers = n_workers
 
-    def compute(self, yhat):
+    def compute(self, res):
         # The arguments of this function are the outputs of the
         # `get_result` method of the solver.
         # They are customizable.
+        yhat = res["yhat"]
         results = dict()
         if yhat.ndim > 1:
             top1 = np.argmax(yhat, axis=1)

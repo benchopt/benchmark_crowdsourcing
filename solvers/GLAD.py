@@ -1,5 +1,5 @@
 from benchopt import BaseSolver, safe_import_context
-from benchopt.stopping_criterion import SufficientProgressCriterion
+from benchopt.stopping_criterion import SufficientDescentCriterion
 
 with safe_import_context() as import_ctx:
     import numpy as np
@@ -11,14 +11,14 @@ with safe_import_context() as import_ctx:
 class Solver(BaseSolver):
     """GLAD algorithm."""
 
-    # Adapted from https://github.com/notani/python-glad
+    # from https://github.com/notani/python-glad
     name = "GLAD"
     install_cmd = "conda"
     requirements = ["numpy", "scipy"]
-    stopping_strategy = "callback"
-    stopping_criterion = SufficientProgressCriterion(
-        patience=10, strategy="callback"
+    stopping_criterion = SufficientDescentCriterion(
+        patience=1, strategy="tolerance"
     )
+    parameters = {"maxiter": [10], "epsilon": [1e-5]}
 
     @staticmethod
     def sigmoid(x):
@@ -57,7 +57,10 @@ class Solver(BaseSolver):
         self.n_workers = n_workers
         self.n_task = len(self.answers)
 
-    def run(self, callback):
+    def run(self, tol):
+        self.run_aggregation()
+
+    def run_aggregation(self):
         self.labels = np.zeros((self.n_task, self.n_workers))
         for task, ans in self.answers.items():
             for worker, lab in ans.items():
@@ -76,10 +79,18 @@ class Solver(BaseSolver):
         self.beta = self.priorBeta.copy()
         self.probZ[:] = self.priorZ[:]
 
-        counter = 0
-        while callback(self.probZ):
+        self.EStep()
+        lastQ = self.computeQ()
+        self.MStep()
+        Q = self.computeQ()
+        counter = 1
+        while (counter < self.maxiter) and (
+            abs((Q - lastQ) / lastQ) > self.epsilon
+        ):
+            lastQ = Q
             self.EStep()
             self.MStep()
+            Q = self.computeQ()
             counter += 1
         self.k = counter
 
@@ -255,7 +266,7 @@ class Solver(BaseSolver):
         return dQdAlpha, dQdBeta
 
     def get_result(self):
-        return self.T
+        return {"yhat": self.probZ, "model": None}
 
     @staticmethod
     def get_next(stop_val):

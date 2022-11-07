@@ -1,0 +1,16 @@
+objective:
+  - Crowdsourcing
+
+dataset: # dataset to run benchmark on
+  - labelme
+  - bluebirds
+
+solver: # list of example solvers to do benchmark
+  - dawidskene[maxiter=10]
+  - mv
+  - glad[maxiter=10]
+  - WCDawidSkene[L=5,maxiter=10]
+
+# note: use more repetitions to have quantiles on the plot
+n-repetitions: 1
+max-runs: 5

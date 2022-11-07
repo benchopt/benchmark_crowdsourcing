@@ -1,4 +1,8 @@
-from benchopt import BaseSolver, safe_import_context
+from benchopt import (
+    BaseSolver,
+    safe_import_context,
+)
+from benchopt.stopping_criterion import SufficientDescentCriterion
 
 with safe_import_context() as import_ctx:
     import numpy as np
@@ -10,6 +14,10 @@ class Solver(BaseSolver):
     name = "MV"
     install_cmd = "conda"
     requirements = ["numpy"]
+
+    stopping_criterion = SufficientDescentCriterion(
+        strategy="tolerance", patience=1
+    )
 
     def set_objective(
         self, train, val, test, votes, y_train_truth, n_classes, n_workers
@@ -34,8 +42,8 @@ class Solver(BaseSolver):
                 baseline[task_id, vote] += 1
         self.baseline = baseline
 
-    def run(self, callback):
+    def run(self, tol):
         self.compute_baseline()
 
     def get_result(self):
-        return np.argmax(self.baseline, axis=1)
+        return {"yhat": np.argmax(self.baseline, axis=1), "model": None}
