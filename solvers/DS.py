@@ -1,5 +1,4 @@
 from benchopt import BaseSolver, safe_import_context
-from benchopt.stopping_criterion import SufficientDescentCriterion
 
 with safe_import_context() as import_ctx:
     import numpy as np
@@ -12,9 +11,7 @@ class Solver(BaseSolver):
     install_cmd = "conda"
     requirements = ["numpy"]
     parameters = {"maxiter": [10], "epsilon": [1e-5]}
-    stopping_criterion = SufficientDescentCriterion(
-        patience=1, strategy="tolerance"
-    )
+    stopping_strategy = "callback"
 
     def set_objective(
         self, train, val, test, votes, y_train_truth, n_classes, n_workers
@@ -30,6 +27,7 @@ class Solver(BaseSolver):
         self.y_train_truth = y_train_truth
         self.n_workers = n_workers
         self.n_task = len(self.answers)
+        self.run_aggregation()
 
     def get_crowd_matrix(self):
         matrix = np.zeros((self.n_task, self.n_workers, self.n_classes))
@@ -101,8 +99,9 @@ class Solver(BaseSolver):
         self.loglikelihood_value = ll
         self.counter = k
 
-    def run(self, tol):
-        self.run_aggregation()
+    def run(self, callback):
+        dict_callback = {"yhat": self.T, "model": None}
+        callback(dict_callback)
 
     def get_result(self):
         return {"yhat": self.T, "model": None}

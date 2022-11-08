@@ -1,5 +1,4 @@
 from benchopt import BaseSolver, safe_import_context
-from benchopt.stopping_criterion import SufficientDescentCriterion
 
 with safe_import_context() as import_ctx:
     import numpy as np
@@ -15,10 +14,8 @@ class Solver(BaseSolver):
     name = "GLAD"
     install_cmd = "conda"
     requirements = ["numpy", "scipy"]
-    stopping_criterion = SufficientDescentCriterion(
-        patience=1, strategy="tolerance"
-    )
     parameters = {"maxiter": [10], "epsilon": [1e-5]}
+    stopping_strategy = "callback"
 
     @staticmethod
     def sigmoid(x):
@@ -56,9 +53,11 @@ class Solver(BaseSolver):
         self.y_train_truth = y_train_truth
         self.n_workers = n_workers
         self.n_task = len(self.answers)
-
-    def run(self, tol):
         self.run_aggregation()
+
+    def run(self, callback):
+        dict_callback = {"yhat": self.probZ, "model": None}
+        callback(dict_callback)
 
     def run_aggregation(self):
         self.labels = np.zeros((self.n_task, self.n_workers))
