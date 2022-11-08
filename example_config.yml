@@ -4,6 +4,7 @@ objective:
 dataset: # dataset to run benchmark on
   - labelme
   - bluebirds
+  - simulated
 
 solver: # list of example solvers to do benchmark
   - dawidskene[maxiter=10]

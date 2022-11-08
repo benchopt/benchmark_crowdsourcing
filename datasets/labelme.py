@@ -1,4 +1,3 @@
-from benchopt import BaseDataset
 from benchopt import safe_import_context
 
 
@@ -6,17 +5,20 @@ with safe_import_context() as import_ctx:
     import pooch
     import numpy as np
     from download import download
+    import torchvision.datasets as datasets
+
+    MultiFrameworkDataset = import_ctx.import_from(
+        "multi_frameworks_dataset",
+        "MultiFrameworkDataset",
+    )
 
 
-class Dataset(BaseDataset):
+class Dataset(MultiFrameworkDataset):
 
     name = "labelme"
     install_cmd = "conda"
     requirements = ["pip:pooch", "numpy", "pip:download", "pip:tqdm"]
     classification_type = "image"
-
-    def __init__(self):
-        self.X = None
 
     def prepare_data(self):
         download(
