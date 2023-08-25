@@ -3,11 +3,15 @@ objective:
 
 dataset: # dataset to run benchmark on
   - bluebirds
-
+  - adultcontent2
+  - rte
 solver: # list of example solvers to do benchmark
-  - peerannot
+  - peerannot[strategy=MV]
+  - peerannot[strategy=DS]
+  - peerannot[strategy=GLAD]
+  - peerannot[strategy=WDS]
   - crowd-kit
-
+  - FDS
 # note: use more repetitions to have quantiles on the plot
 n-repetitions: 1
 max-runs: 5

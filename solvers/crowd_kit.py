@@ -2,7 +2,6 @@ from benchopt import BaseSolver, safe_import_context
 from benchopt.utils import profile
 
 with safe_import_context() as import_ctx:
-    import numpy as np
     import crowdkit.aggregation.classification as kitagg
     import pandas as pd
 
@@ -13,6 +12,17 @@ class Solver(BaseSolver):
     requirements = ["pip:crowd-kit", "pandas"]
 
     parameters = {"strategy": ["DawidSkene", "GLAD", "Wawa", "KOS", "MACE"]}
+
+    def skip(
+        self,
+        votes,
+        n_worker,
+        n_task,
+        n_classes,
+    ):
+        if n_classes > 2:
+            return True, f"{self.name} only handles binary classification"
+        return False, None
 
     def json_to_dataframe(self, json_data):
         rows = []

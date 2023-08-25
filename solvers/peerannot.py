@@ -2,7 +2,6 @@ from benchopt import BaseSolver, safe_import_context
 from benchopt.utils import profile
 
 with safe_import_context() as import_ctx:
-    import numpy as np
     from peerannot.models import agg_strategies
     from pathlib import Path
 
@@ -41,7 +40,11 @@ class Solver(BaseSolver):
     @profile
     def run(self, maxiter):
         if hasattr(self.strat, "run"):
-            self.strat.run(maxiter=maxiter)
+            if self.strategy in ["WDS"]:
+                self.strat.run()
+            else:
+                self.strat.run(maxiter=maxiter)
+
         self.y_hat = self.strat.get_answers()
 
     # Return the solution estimate computed.

@@ -17,9 +17,6 @@ class Dataset(BaseDataset):
     requirements = ["pip:pooch", "numpy", "pandas"]
     classification_type = "text"
 
-    def __init__(self):
-        self.train, self.val, self.test = None, None, None
-
     def prepare_data(self):
         """
         rte dataset:
