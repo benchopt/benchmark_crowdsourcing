@@ -1,65 +1,45 @@
-from benchopt import BaseObjective, safe_import_context
+import numpy as np
+from numpy.linalg import norm
 
-# Protect import to allow manipulating objective without importing library
-# Useful for autocompletion and install commands
-with safe_import_context() as import_ctx:
-    import numpy as np
+from benchopt import BaseObjective
 
 
 class Objective(BaseObjective):
-    name = "Crowdsourcing"
+    """Aggregation crowdsourcing."""
+
+    min_benchopt_version = "1.3"
+    name = "crowdsourcing"
+
+    def set_data(self, votes, ground_truth, n_task, n_worker, n_classes):
+        self.votes = votes
+        self.n_worker = n_worker
+        self.ground_truth = ground_truth
+        self.n_task = n_task
+        self.n_classes = n_classes
 
     def get_one_solution(self):
-        # Return one solution. This should be compatible with 'self.compute'.
-        return {"yhat": np.zeros(len(self.votes)), "model": None}
+        return np.zeros(self.n_task)
 
-    def set_data(
-        self,
-        train,
-        val,
-        test,
-        votes,
-        y_train_truth,
-        n_classes,
-        n_workers,
-        **kwargs
-    ):
-        # The keyword arguments of this function are the keys of the `data`
-        # dict in the `get_data` function of the dataset.
-        # They are customizable.
-        self.train = train
-        self.val = val
-        self.test = test
-        self.votes = votes
-        self.y_train_truth = y_train_truth
-        self.n_classes = n_classes
-        self.n_workers = n_workers
+    def evaluate_result(self, **kwargs):
+        yhat = kwargs["yhat"]
+        if yhat.ndim == 2:  # argmax with random tie breaker
+            y, x = np.where((yhat.T == yhat.max(1)).T)
+            aux = np.random.permutation(len(y))
+            xa = np.empty_like(x)
+            xa[aux] = x
+            yhat = xa[
+                np.maximum.reduceat(aux, np.where(np.diff(y, prepend=-1))[0])
+            ]
 
-    def compute(self, res):
-        # The arguments of this function are the outputs of the
-        # `get_result` method of the solver.
-        # They are customizable.
-        yhat = res["yhat"]
-        results = dict()
-        if yhat.ndim > 1:
-            top1 = np.argmax(yhat, axis=1)
-        else:
-            top1 = yhat
-        train_accuracy = np.mean(top1 == self.y_train_truth)
-        results["Train Accuracy"] = train_accuracy
-        results["value"] = train_accuracy
-        return results
+        accuracy = np.mean(yhat == self.ground_truth)
+        # XXX compute average entropy too
 
-    def to_dict(self):
-        # The output of this function are the keyword arguments
-        # for the `set_objective` method of the solver.
-        # They are customizable.
+        return dict(value=accuracy)
+
+    def get_objective(self):
         return dict(
-            train=self.train,
-            val=self.val,
-            test=self.test,
             votes=self.votes,
-            y_train_truth=self.y_train_truth,
+            n_worker=self.n_worker,
+            n_task=self.n_task,
             n_classes=self.n_classes,
-            n_workers=self.n_workers,
         )

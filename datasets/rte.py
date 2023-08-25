@@ -53,16 +53,16 @@ class Dataset(BaseDataset):
         gt = pd.read_csv(filenames[0], sep="\t")
         labels = pd.read_csv(filenames[1], sep="\t")
         # process ground truth
-        y_train_truth = {}
+        ground_truth = {}
         for index, row in gt.iterrows():
-            y_train_truth[row["id"]] = int(row["value"])
+            ground_truth[row["id"]] = int(row["value"])
         self.task_converter = {
             taskid: taskrank
             for taskid, taskrank in zip(
-                y_train_truth.keys(), range(len(y_train_truth))
+                ground_truth.keys(), range(len(ground_truth))
             )
         }
-        self.y_train_truth = np.array(list(y_train_truth.values()))
+        self.ground_truth = np.array(list(ground_truth.values()))
         # process votes and tasks
         all_workers = labels["!amt_worker_ids"].unique()
         self.worker_converter = {
@@ -85,15 +85,12 @@ class Dataset(BaseDataset):
         self.tasks = tasks
 
     def get_data(self):
-        # XXX TODO: train/val/test the tasks
         self.prepare_data()
         data = dict(
-            train=self.train,
-            val=self.val,
-            test=self.test,
             votes=self.votes,
-            y_train_truth=self.y_train_truth,
-            n_workers=len(self.worker_converter),
+            ground_truth=self.ground_truth,
+            n_worker=len(self.worker_converter),
+            n_task=len(self.votes),
             n_classes=2,
         )
         return data
