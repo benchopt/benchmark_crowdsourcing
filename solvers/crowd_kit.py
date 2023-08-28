@@ -20,7 +20,7 @@ class Solver(BaseSolver):
         n_task,
         n_classes,
     ):
-        if n_classes > 2:
+        if n_classes > 2 and self.strategy == "KOS":
             return True, f"{self.name} only handles binary classification"
         return False, None
 
