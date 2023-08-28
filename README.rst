@@ -7,7 +7,7 @@ The label aggregation for crowdsourced classification datasets consists in prese
 The label given for task $i$ by worker $j$ is denoted $y_i^{(j)}$.
 Given an aggregation strategy $\\texttt{agg}$ (like majority voting or Dawid and Skene's model), we look at the recovery of the underlying ground truth labels $y_i^*$:
 
-$$ \\mathrm{AccTrain} = \\frac{1}{n_{task}} \\sum_{i=1}^{n_{task}} 1\\!\\!1(\\hat{y_i^{\\texttt{agg}}}=y_i^*).$$
+$$ \\mathrm{AccTrain} = \\frac{1}{n_{task}} \\sum_{i=1}^{n_{task}} 1\\!\\!1(\\hat{y}_i^{\\texttt{agg}}=y_i^*).$$
 
 Other objectives as the F1 score can also be considered.
 
