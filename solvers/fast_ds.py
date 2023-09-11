@@ -8,10 +8,14 @@ with safe_import_context() as import_ctx:
 
 
 class Solver(BaseSolver):
-    name = "FDS"  # https://github.com/sukrutrao/Fast-Dawid-Skene/blob/master/fast_dawid_skene/algorithms.py
+    name = "FDS"  # https://github.com/sukrutrao/Fast-Dawid-Skene/
     install_cmd = "conda"
     references = [
-        "Vaibhav B Sinha, Sukrut Rao, Vineeth N Balasubramanian. Fast Dawid-Skene: A Fast Vote Aggregation Scheme for Sentiment Classification. In Workshop on Issues of Sentiment Discovery and Opinion Mining (WISDOM) at the ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD) 2018, August 2018."
+        """Vaibhav B Sinha, Sukrut Rao, Vineeth N Balasubramanian. Fast 
+        Dawid-Skene: A Fast Vote Aggregation Scheme for Sentiment 
+        Classification. In Workshop on Issues of Sentiment Discovery and 
+        Opinion Mining (WISDOM) at the ACM SIGKDD Conference on Knowledge 
+        Discovery and Data Mining (KDD) 2018, August 2018."""
     ]
     parameters = {
         "strategy": ["FDS", "H"],  # hybrid or fast version
@@ -85,9 +89,9 @@ class Solver(BaseSolver):
         error_rates = np.zeros([self.n_worker, self.n_classes, self.n_classes])
         for k in range(self.n_worker):
             for j in range(self.n_classes):
-                for l in range(self.n_classes):
-                    error_rates[k, j, l] = np.dot(
-                        question_classes[:, j], counts[:, k, l]
+                for ell in range(self.n_classes):
+                    error_rates[k, j, ell] = np.dot(
+                        question_classes[:, j], counts[:, k, ell]
                     )
                 sum_over_responses = np.sum(error_rates[k, j, :])
                 if sum_over_responses > 0:

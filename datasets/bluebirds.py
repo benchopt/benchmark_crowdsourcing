@@ -24,7 +24,8 @@ class Dataset(BaseDataset):
         """
         odie = pooch.create(
             path=pooch.os_cache(f"./data/{self.name}"),
-            base_url="https://raw.githubusercontent.com/welinder/cubam/public/demo/bluebirds/",
+            base_url="https://raw.githubusercontent.com/welinder/"
+            "cubam/public/demo/bluebirds/",
             registry={
                 "gt.yaml": None,
                 "labels.yaml": None,

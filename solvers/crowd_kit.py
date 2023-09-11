@@ -23,7 +23,7 @@ class Solver(BaseSolver):
         if n_classes > 2 and self.strategy == "KOS":
             return (
                 True,
-                f"{self.name}{self.strategy} only handles binary classification",
+                f"{self.name}{self.strategy} only handles binary labels",
             )
         return False, None
 

@@ -22,12 +22,14 @@ class Dataset(BaseDataset):
                 AMTid url classcode
         """
         train_truth = pooch.retrieve(
-            "https://raw.githubusercontent.com/ipeirotis/Get-Another-Label/master/data/AdultContent2/gold.txt",
+            "https://raw.githubusercontent.com/ipeirotis/"
+            "Get-Another-Label/master/data/AdultContent2/gold.txt",
             known_hash=None,
             path=pooch.os_cache(f"./data/{self.name}"),
         )
         votes = pooch.retrieve(
-            "https://raw.githubusercontent.com/ipeirotis/Get-Another-Label/master/data/AdultContent2/labels.txt",
+            "https://raw.githubusercontent.com/ipeirotis/Get-Another-Label/"
+            "master/data/AdultContent2/labels.txt",
             known_hash=None,
             path=pooch.os_cache(f"./data/{self.name}"),
         )

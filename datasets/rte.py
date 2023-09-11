@@ -24,11 +24,12 @@ class Dataset(BaseDataset):
             - votes in labels.yaml formatted as:
                 {worker: {task: vote}}
         """
+        str_ = "snow2008_mturk_data_with_orig_files_assembled_201904.zip"
         odie = pooch.create(
             path=pooch.os_cache(f"./data/{self.name}"),
             base_url="https://sites.google.com/site/nlpannotations/",
             registry={
-                "snow2008_mturk_data_with_orig_files_assembled_201904.zip": None,
+                str_: None,
             },
         )
         data = odie.fetch(odie.registry_files[0], processor=pooch.Unzip())
