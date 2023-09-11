@@ -11,10 +11,10 @@ class Solver(BaseSolver):
     name = "FDS"  # https://github.com/sukrutrao/Fast-Dawid-Skene/
     install_cmd = "conda"
     references = [
-        """Vaibhav B Sinha, Sukrut Rao, Vineeth N Balasubramanian. Fast 
-        Dawid-Skene: A Fast Vote Aggregation Scheme for Sentiment 
-        Classification. In Workshop on Issues of Sentiment Discovery and 
-        Opinion Mining (WISDOM) at the ACM SIGKDD Conference on Knowledge 
+        """Vaibhav B Sinha, Sukrut Rao, Vineeth N Balasubramanian. Fast
+        Dawid-Skene: A Fast Vote Aggregation Scheme for Sentiment
+        Classification. In Workshop on Issues of Sentiment Discovery and
+        Opinion Mining (WISDOM) at the ACM SIGKDD Conference on Knowledge
         Discovery and Data Mining (KDD) 2018, August 2018."""
     ]
     parameters = {
