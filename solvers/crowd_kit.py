@@ -21,7 +21,10 @@ class Solver(BaseSolver):
         n_classes,
     ):
         if n_classes > 2 and self.strategy == "KOS":
-            return True, f"{self.name} only handles binary classification"
+            return (
+                True,
+                f"{self.name}{self.strategy} only handles binary classification",
+            )
         return False, None
 
     def json_to_dataframe(self, json_data):
