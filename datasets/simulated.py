@@ -24,22 +24,6 @@ class Dataset(BaseDataset):
         "workerload": [50],
     }
 
-    def __init__(
-        self,
-        n_task,
-        n_worker,
-        n_classes,
-        ratio,
-        strategy,
-        feedback,
-        workerload,
-    ):
-        # Store the parameters of the dataset
-        self.n_task, self.n_worker = n_worker, n_task
-        self.strategy = strategy
-        self.ratio = ratio
-        self.feedback, self.workerload = feedback, workerload
-
     def votes(self):
         rng = np.random.default_rng(42)
         strat = simulation_strategies[self.strategy.lower()]
