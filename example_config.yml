@@ -12,6 +12,8 @@ solver: # list of example solvers to do benchmark
   - peerannot[strategy=WDS]
   - crowd-kit
   - FDS
+  - DS-mcmc
 # note: use more repetitions to have quantiles on the plot
 n-repetitions: 1
 max-runs: 5
+timeout: 15m
