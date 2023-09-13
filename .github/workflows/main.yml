@@ -52,8 +52,10 @@ jobs:
         conda install -yq pip
 
         # Get the correct branch of benchopt
-        user=${BENCHOPT_BRANCH%:*}
-        branch=${BENCHOPT_BRANCH##*:}
+        # user=${BENCHOPT_BRANCH%:*}
+        # branch=${BENCHOPT_BRANCH##*:}
+        user=tomMoral
+        branch=FIX_pytest_install
         pip install -U git+https://github.com/$user/benchopt@$branch
 
     - name: Test
