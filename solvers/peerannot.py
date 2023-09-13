@@ -15,6 +15,20 @@ class Solver(BaseSolver):
         "strategy": ["MV", "DS", "GLAD", "WDS", "DSWC"],
     }
 
+    def skip(
+        self,
+        votes,
+        n_worker,
+        n_task,
+        n_classes,
+    ):
+        if n_classes > 2 and self.strategy == "GhostSVD":
+            return (
+                True,
+                f"{self.name}{self.strategy} only handles binary labels",
+            )
+        return False, None
+
     def set_objective(
         self,
         votes,
