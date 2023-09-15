@@ -9,7 +9,6 @@ class Objective(BaseObjective):
 
     min_benchopt_version = "1.3"
     name = "crowdsourcing"
-    requirements = ["s"]
 
     def set_data(self, votes, ground_truth, n_task, n_worker, n_classes):
         self.votes = votes
@@ -18,8 +17,8 @@ class Objective(BaseObjective):
         self.n_task = n_task
         self.n_classes = n_classes
 
-    def get_one_solution(self):
-        return np.zeros(self.n_task)
+    def get_one_result(self):
+        return {"yhat": np.zeros(self.n_task)}
 
     def evaluate_result(self, **kwargs):
         yhat = kwargs["yhat"]
@@ -33,7 +32,7 @@ class Objective(BaseObjective):
             ]
         available = np.where(self.ground_truth != -1)
         self.ground_truth = self.ground_truth[available[0]]
-        yhat = yhat[available[0]]
+        yhat = np.array(yhat[available[0]]).astype(int)
         # AccTrain recovery accuracy
         accuracy = np.mean(yhat == self.ground_truth)
         # F1: micro and macro
