@@ -9,6 +9,7 @@ class Objective(BaseObjective):
 
     min_benchopt_version = "1.3"
     name = "crowdsourcing"
+    is_convex = False  # in general
 
     def set_data(self, votes, ground_truth, n_task, n_worker, n_classes):
         self.votes = votes
