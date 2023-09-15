@@ -2,49 +2,41 @@ from benchopt import BaseDataset, safe_import_context
 
 with safe_import_context() as import_ctx:
     import numpy as np
-    from peerannot.helpers.simulations_strategies import simulation_strategies
-    from pathlib import Path
 
 
 class Dataset(BaseDataset):
 
     name = "Simulated"
     install_cmd = "conda"
-    requirements = ["pip:peerannot"]
 
     # List of parameters to generate the datasets. The benchmark will consider
     # the cross product for each key in the dictionary.
     parameters = {
         "n_task": [200],
         "n_worker": [50],
-        "ratio": [0.2],  # proportion of spammer
         "n_classes": [3],
-        "strategy": ["hammer-spammer"],
-        "feedback": [20],
-        "workerload": [50],
+        "ratio": [0.5],  # probability to generate a spammer
     }
 
     def votes(self):
         rng = np.random.default_rng(42)
-        strat = simulation_strategies[self.strategy.lower()]
         true_labels = rng.choice(
             self.n_classes, size=self.n_task, replace=True
         )
-        folder = Path.cwd() / "simulation_data"
-        folder.mkdir(parents=True, exist_ok=True)
-        answers = strat(
-            self.n_worker,
-            true_labels,
-            self.n_classes,
-            rng,
-            ratio=self.ratio,
-            feedback=self.feedback,
-            workerload=self.workerload,
-            verbose=False,
-            imbalance_votes=False,
-            folder=folder,
+        votes = {}
+        type_worker = rng.choice(
+            ["hammer", "spammer"],
+            size=self.n_worker,
+            p=[1 - self.ratio, self.ratio],
         )
-        self.answers = answers
+        for i in range(self.n_task):
+            votes[i] = {}
+            for j in range(self.n_worker):
+                if type_worker[j] == "hammer":
+                    votes[i][j] = true_labels[i]
+                else:
+                    votes[i][j] = rng.choice(range(1, self.n_classes))
+        self.answers = votes
         self.ground_truth = true_labels
 
     def get_data(self):
