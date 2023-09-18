@@ -2,6 +2,9 @@ from benchopt import BaseSolver, safe_import_context
 from benchopt.utils import profile
 
 with safe_import_context() as import_ctx:
+    import os
+    # see https://github.com/pytorch/pytorch/issues/78490
+    os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
     from peerannot.models import agg_strategies
     from pathlib import Path
 
