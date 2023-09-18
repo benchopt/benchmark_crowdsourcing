@@ -2,15 +2,18 @@ objective:
   - Crowdsourcing
 
 dataset: # dataset to run benchmark on
-  - labelme
   - bluebirds
-
+  - adultcontent2
+  - rte
 solver: # list of example solvers to do benchmark
-  - dawidskene[maxiter=10]
-  - mv
-  - glad[maxiter=10]
-  - WCDawidSkene[L=5,maxiter=10]
-
+  - peerannot[strategy=MV]
+  - peerannot[strategy=DS]
+  - peerannot[strategy=GLAD]
+  - peerannot[strategy=WDS]
+  - crowd-kit
+  - FDS
+  - DS-mcmc
 # note: use more repetitions to have quantiles on the plot
 n-repetitions: 1
 max-runs: 5
+timeout: 15m

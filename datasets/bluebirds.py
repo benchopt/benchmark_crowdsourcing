@@ -15,9 +15,6 @@ class Dataset(BaseDataset):
     requirements = ["pip:pooch", "numpy"]
     classification_type = "image"
 
-    def __init__(self):
-        self.train, self.val, self.test = None, None, None
-
     def prepare_data(self):
         """
         BlueBirds dataset:
@@ -27,7 +24,8 @@ class Dataset(BaseDataset):
         """
         odie = pooch.create(
             path=pooch.os_cache(f"./data/{self.name}"),
-            base_url="https://raw.githubusercontent.com/welinder/cubam/public/demo/bluebirds/",
+            base_url="https://raw.githubusercontent.com/welinder/"
+            "cubam/public/demo/bluebirds/",
             registry={
                 "gt.yaml": None,
                 "labels.yaml": None,
@@ -36,14 +34,14 @@ class Dataset(BaseDataset):
         train_truth = odie.fetch("gt.yaml")
         votes = odie.fetch("labels.yaml")
         with open(train_truth, "r") as f:
-            y_train_truth = yaml.safe_load(f)
+            ground_truth = yaml.safe_load(f)
         self.task_converter = {
             taskid: taskrank
             for taskid, taskrank in zip(
-                y_train_truth.keys(), range(len(y_train_truth))
+                ground_truth.keys(), range(len(ground_truth))
             )
         }
-        self.y_train_truth = np.array(list(y_train_truth.values()))
+        self.ground_truth = np.array(list(ground_truth.values()))
         with open(votes, "r") as f:
             labels = yaml.safe_load(f)
         self.worker_converter = {
@@ -61,12 +59,10 @@ class Dataset(BaseDataset):
     def get_data(self):
         self.prepare_data()
         data = dict(
-            train=self.train,
-            val=self.val,
-            test=self.test,
             votes=self.votes,
-            y_train_truth=self.y_train_truth,
-            n_workers=len(self.worker_converter),
+            ground_truth=self.ground_truth,
+            n_worker=len(self.worker_converter),
+            n_task=len(self.votes),
             n_classes=2,
         )
         return data

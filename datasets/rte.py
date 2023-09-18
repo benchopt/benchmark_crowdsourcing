@@ -17,9 +17,6 @@ class Dataset(BaseDataset):
     requirements = ["pip:pooch", "numpy", "pandas"]
     classification_type = "text"
 
-    def __init__(self):
-        self.train, self.val, self.test = None, None, None
-
     def prepare_data(self):
         """
         rte dataset:
@@ -27,11 +24,12 @@ class Dataset(BaseDataset):
             - votes in labels.yaml formatted as:
                 {worker: {task: vote}}
         """
+        str_ = "snow2008_mturk_data_with_orig_files_assembled_201904.zip"
         odie = pooch.create(
             path=pooch.os_cache(f"./data/{self.name}"),
             base_url="https://sites.google.com/site/nlpannotations/",
             registry={
-                "snow2008_mturk_data_with_orig_files_assembled_201904.zip": None,
+                str_: None,
             },
         )
         data = odie.fetch(odie.registry_files[0], processor=pooch.Unzip())
@@ -53,16 +51,16 @@ class Dataset(BaseDataset):
         gt = pd.read_csv(filenames[0], sep="\t")
         labels = pd.read_csv(filenames[1], sep="\t")
         # process ground truth
-        y_train_truth = {}
+        ground_truth = {}
         for index, row in gt.iterrows():
-            y_train_truth[row["id"]] = int(row["value"])
+            ground_truth[row["id"]] = int(row["value"])
         self.task_converter = {
             taskid: taskrank
             for taskid, taskrank in zip(
-                y_train_truth.keys(), range(len(y_train_truth))
+                ground_truth.keys(), range(len(ground_truth))
             )
         }
-        self.y_train_truth = np.array(list(y_train_truth.values()))
+        self.ground_truth = np.array(list(ground_truth.values()))
         # process votes and tasks
         all_workers = labels["!amt_worker_ids"].unique()
         self.worker_converter = {
@@ -85,15 +83,12 @@ class Dataset(BaseDataset):
         self.tasks = tasks
 
     def get_data(self):
-        # XXX TODO: train/val/test the tasks
         self.prepare_data()
         data = dict(
-            train=self.train,
-            val=self.val,
-            test=self.test,
             votes=self.votes,
-            y_train_truth=self.y_train_truth,
-            n_workers=len(self.worker_converter),
+            ground_truth=self.ground_truth,
+            n_worker=len(self.worker_converter),
+            n_task=len(self.votes),
             n_classes=2,
         )
         return data
