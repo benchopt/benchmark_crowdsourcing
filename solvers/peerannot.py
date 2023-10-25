@@ -26,11 +26,6 @@ class Solver(BaseSolver):
         n_task,
         n_classes,
     ):
-        if n_classes > 2:
-            return (
-                True,
-                f"{self.name}{self.strategy} only handles binary labels",
-            )
         return False, None
 
     def set_objective(
