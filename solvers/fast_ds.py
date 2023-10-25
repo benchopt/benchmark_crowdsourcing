@@ -50,7 +50,6 @@ class Solver(BaseSolver):
             question_classes = self.e_step(
                 counts, class_marginals, error_rates
             )
-        print(np.argmax(question_classes, axis=1))
         self.y_hat = np.argmax(question_classes, axis=1)
 
     def e_step(self, counts, class_marginals, error_rates):
