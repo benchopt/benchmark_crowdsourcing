@@ -11,7 +11,7 @@ class Solver(BaseSolver):
     install_cmd = "conda"
     requirements = ["pip:crowd-kit", "pandas"]
 
-    parameters = {"strategy": ["DawidSkene", "GLAD", "Wawa", "KOS", "MACE"]}
+    parameters = {"strategy": ["DawidSkene", "GLAD", "Wawa", "KOS", "MACE", "MMSR"]}
 
     def skip(
         self,
@@ -58,4 +58,4 @@ class Solver(BaseSolver):
 
     # Return the solution estimate computed.
     def get_result(self):
-        return {"yhat": self.y_hat}
+        return {"yhat": self.y_hat.to_numpy(dtype=int)}
