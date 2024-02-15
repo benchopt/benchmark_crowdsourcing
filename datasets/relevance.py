@@ -2,7 +2,6 @@ from benchopt import BaseDataset
 from benchopt import safe_import_context
 
 with safe_import_context() as import_ctx:
-    import pooch
     import numpy as np
     from crowdkit.datasets import load_dataset
     from sklearn.preprocessing import OrdinalEncoder
@@ -23,7 +22,7 @@ class Dataset(BaseDataset):
 
     def prepare_data(self):
         """
-        Relevance datasets: either reevance 2, 5 or nist-trec
+        Relevance datasets: either relevance 2, 5 or nist-trec
         """
         df, df_gt = load_dataset(self.dataset)
         task_enc = OrdinalEncoder()
@@ -37,6 +36,7 @@ class Dataset(BaseDataset):
         df_gt = df_gt.reset_index()
         if len(task_enc.categories_[0]) == len(df_gt):
             df_gt["task"] = task_enc.transform(df_gt[["task"]]).astype(int)
+            df_gt.rename(columns={"true_label": "label"}, inplace=True)
             df_gt["label"] = label_enc.transform(df_gt[["label"]]).astype(int)
         else:  # not all ground truth is available
             df_gt["task"] = task_enc.transform(df_gt[["task"]]).astype(int)
@@ -44,6 +44,7 @@ class Dataset(BaseDataset):
             df_gt["label"] = label_enc.transform(df_gt[["label"]]).astype(int)
             df_gt.rename(columns={"label": "true_label"}, inplace=True)
         temp = df.merge(df_gt, on=["task"], how="left")
+        temp = temp.sort_values(by=["task", "worker"])
         temp["true_label"] = temp["true_label"].fillna(-1).astype(int)
 
         self.ground_truth = np.array(
@@ -51,7 +52,8 @@ class Dataset(BaseDataset):
         )
 
         votes = {task: {} for task in range(len(self.ground_truth))}
-        for _, (worker, task, label, _) in temp.iterrows():
+        temp = temp[["task", "worker", "label", "true_label"]]
+        for _, (task, worker, label, _) in temp.iterrows():
             votes[task][worker] = label
         self.votes = votes
         self.n_worker = len(worker_enc.categories_[0])
