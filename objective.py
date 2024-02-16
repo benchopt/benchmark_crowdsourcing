@@ -24,7 +24,6 @@ class Objective(BaseObjective):
     def evaluate_result(self, **kwargs):
         yhat = kwargs["yhat"]
         if yhat.ndim == 2:  # argmax with random tie breaker
-            print("INSIDE")
             y, x = np.where((yhat.T == yhat.max(1)).T)
             aux = np.random.permutation(len(y))
             xa = np.empty_like(x)
