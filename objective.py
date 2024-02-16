@@ -24,18 +24,19 @@ class Objective(BaseObjective):
     def evaluate_result(self, **kwargs):
         yhat = kwargs["yhat"]
         if yhat.ndim == 2:  # argmax with random tie breaker
+            print("INSIDE")
             y, x = np.where((yhat.T == yhat.max(1)).T)
             aux = np.random.permutation(len(y))
             xa = np.empty_like(x)
             xa[aux] = x
             yhat = xa[np.maximum.reduceat(aux, np.where(np.diff(y, prepend=-1))[0])]
         available = np.where(self.ground_truth != -1)
-        self.ground_truth = self.ground_truth[available[0]]
+        self.gt = self.ground_truth[available[0]]
         yhat = np.array(yhat[available[0]]).astype(int)
         # AccTrain recovery accuracy
-        accuracy = np.mean(yhat == self.ground_truth)
+        accuracy = np.mean(yhat == self.gt)
         # F1: micro and macro
-        microf1, macrof1 = self.compute_f1scores(self.ground_truth, yhat)
+        microf1, macrof1 = self.compute_f1scores(self.gt, yhat)
         return dict(value=accuracy, microf1=microf1, macrof1=macrof1)
 
     def compute_f1scores(self, y_true, y_pred):
