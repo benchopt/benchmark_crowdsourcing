@@ -10,7 +10,7 @@ class Solver(BaseSolver):
     name = "crowd-kit"
     install_cmd = "conda"
     requirements = ["pip:crowd-kit", "pandas"]
-
+    sampling_strategy = "iteration"
     parameters = {"strategy": ["DawidSkene", "GLAD", "Wawa", "KOS", "MACE", "MMSR"]}
 
     def skip(
@@ -55,6 +55,7 @@ class Solver(BaseSolver):
         else:
             self.aggregation = self.strat(n_iter=maxiter)
         self.y_hat = self.aggregation.fit_predict(self.votes)
+        # print(maxiter, self.y_hat)
 
     # Return the solution estimate computed.
     def get_result(self):

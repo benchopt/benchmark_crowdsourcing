@@ -14,7 +14,7 @@ class Solver(BaseSolver):
     name = "peerannot"  # majority vote
     install_cmd = "conda"
     requirements = ["pip:peerannot", "pathlib"]
-
+    sampling_strategy = "iteration"
     parameters = {
         "strategy": ["MV", "DS", "GLAD", "WDS", "DSWC"],
     }
