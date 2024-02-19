@@ -40,12 +40,22 @@ class Objective(BaseObjective):
 
     def compute_f1scores(self, y_true, y_pred):
         unique_classes = np.unique(np.concatenate((y_true, y_pred)))
+        if unique_classes[0] == -1:
+            unique_classes = unique_classes[1:]
         class_mapping = {cls: idx for idx, cls in enumerate(unique_classes)}
         y_true_onehot = np.zeros((len(y_true), self.n_classes))
         y_pred_onehot = np.zeros((len(y_pred), self.n_classes))
+        print(
+            y_true_onehot.shape,
+            y_pred_onehot.shape,
+            y_true.shape,
+            y_pred.shape,
+            class_mapping,
+        )
         for cls, idx in class_mapping.items():
-            y_true_onehot[np.where(y_true == cls), idx] = 1
-            y_pred_onehot[np.where(y_pred == cls), idx] = 1
+            if idx != -1:
+                y_true_onehot[np.where(y_true == cls), idx] = 1
+                y_pred_onehot[np.where(y_pred == cls), idx] = 1
         micro_tp = np.sum(np.logical_and(y_true_onehot, y_pred_onehot))
         micro_fp = np.sum(np.logical_and(np.logical_not(y_true_onehot), y_pred_onehot))
         micro_fn = np.sum(np.logical_and(y_true_onehot, np.logical_not(y_pred_onehot)))
