@@ -60,7 +60,7 @@ class Dataset(BaseDataset):
         return dict(
             votes=self.answers,
             ground_truth=self.ground_truth,
-            n_worker=204,
+            n_worker=205,
             n_task=79592,
             n_classes=2,
         )
