@@ -11,7 +11,7 @@ class Solver(BaseSolver):
     install_cmd = "conda"
     requirements = ["pip:crowd-kit", "pandas"]
     sampling_strategy = "iteration"
-    parameters = {"strategy": ["DawidSkene", "GLAD", "Wawa", "KOS", "MACE", "MMSR"]}
+    parameters = {"strategy": ["DawidSkene", "GLAD", "Wawa", "KOS", "MACE"]}
 
     def skip(
         self,
