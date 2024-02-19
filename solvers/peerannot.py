@@ -16,7 +16,7 @@ class Solver(BaseSolver):
     requirements = ["pip:peerannot", "pathlib"]
     sampling_strategy = "iteration"
     parameters = {
-        "strategy": ["MV", "DS", "GLAD", "WDS", "DSWC"],
+        "strategy": ["MV", "DS", "GLAD", "WDS"],
     }
 
     def skip(
