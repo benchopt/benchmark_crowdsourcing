@@ -45,13 +45,6 @@ class Objective(BaseObjective):
         class_mapping = {cls: idx for idx, cls in enumerate(unique_classes)}
         y_true_onehot = np.zeros((len(y_true), self.n_classes))
         y_pred_onehot = np.zeros((len(y_pred), self.n_classes))
-        print(
-            y_true_onehot.shape,
-            y_pred_onehot.shape,
-            y_true.shape,
-            y_pred.shape,
-            class_mapping,
-        )
         for cls, idx in class_mapping.items():
             if idx != -1:
                 y_true_onehot[np.where(y_true == cls), idx] = 1
