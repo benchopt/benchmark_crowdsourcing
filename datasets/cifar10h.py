@@ -11,13 +11,15 @@ with safe_import_context() as import_ctx:
 class Dataset(BaseDataset):
 
     name = "cifar10h"
-    requirements = ["pip:json", "numpy",
-                    "pip:zipfile", "pip:pooch", "pip:pandas"]
+    requirements = ["pip:json", "numpy", "pip:zipfile", "pip:pooch", "pip:pandas"]
     install_cmd = "conda"
 
     def prepare_data(self):
         self.DIR = Path(__file__).parent.resolve()
-        url = "https://github.com/jcpeterson/cifar-10h/blob/master/data/cifar10h-raw.zip?raw=true"
+        url = (
+            "https://github.com/jcpeterson/cifar-10h/"
+            "blob/master/data/cifar10h-raw.zip?raw=true"
+        )
         filename = self.DIR / "downloads" / "cifar10h-raw.zip"
         filename.parent.mkdir(exist_ok=True)
         if not filename.exists():

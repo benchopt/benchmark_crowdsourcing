@@ -24,8 +24,11 @@ class Dataset(BaseDataset):
                 request.Request(
                     "http://fprodrigues.com/mturk-datasets.tar.gz",
                     headers={  # not a bot
-                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
-                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64)"
+                        "AppleWebKit/537.36 (KHTML, like Gecko)"
+                        "Chrome/51.0.2704.103 Safari/537.36",
+                        "Accept": "text/html,application/xhtml+xml,"
+                        "application/xml;q=0.9,*/*;q=0.8",
                     },
                 ),
                 timeout=60.0,
@@ -69,7 +72,10 @@ class Dataset(BaseDataset):
             if not res.get(task_id, None):
                 res[task_id] = {}
                 gt.append(
-                    self.class_to_idx[gold[gold["id"] == name]["class"].iloc[0]])
+                    self.class_to_idx[
+                            gold[gold["id"] == name]["class"].iloc[0]
+                        ]
+                    )
             res[task_id][worker_conv[worker]] = lab
         self.answers = res
         self.ground_truth = np.array(gt).astype(int)

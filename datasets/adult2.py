@@ -42,7 +42,9 @@ class Dataset(BaseDataset):
         # handling tasks and partial ground truth
         n_task = df[1].nunique()
         self.task_converter = {
-            taskid: taskrank for taskid, taskrank in zip(df[1].unique(), range(n_task))
+            taskid: taskrank for taskid, taskrank in zip(
+                df[1].unique(), range(n_task)
+                )
         }
         gold_truth = train_truth[
             train_truth.set_index([0]).index.isin(df.set_index([1]).index)

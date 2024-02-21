@@ -2,7 +2,6 @@ from benchopt import BaseDataset, safe_import_context
 
 with safe_import_context() as import_ctx:
     import numpy as np
-    import json
     from pathlib import Path
     from urllib import request
     import tarfile
@@ -11,7 +10,7 @@ with safe_import_context() as import_ctx:
 class Dataset(BaseDataset):
 
     name = "LabelMe"
-    requirements = ["pip:json", "numpy", "tarfile"]
+    requirements = ["numpy", "tarfile"]
     install_cmd = "conda"
 
     def prepare_data(self):
@@ -24,8 +23,11 @@ class Dataset(BaseDataset):
                 request.Request(
                     "http://fprodrigues.com/deep_LabelMe.tar.gz",
                     headers={  # not a bot
-                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36",
-                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64)"
+                        "AppleWebKit/537.36 (KHTML, like Gecko)"
+                        "Chrome/51.0.2704.103 Safari/537.36",
+                        "Accept": "text/html,application/xhtml+xml,"
+                        "application/xml;q=0.9,*/*;q=0.8",
                     },
                 ),
                 timeout=60.0,

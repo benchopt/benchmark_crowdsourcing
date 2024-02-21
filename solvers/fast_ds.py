@@ -46,7 +46,9 @@ class Solver(BaseSolver):
         counts = self.counts
         question_classes = self.initialize(counts)
         for _ in range(maxiter):
-            (class_marginals, error_rates) = self.m_step(counts, question_classes)
+            (class_marginals, error_rates) = self.m_step(
+                counts, question_classes
+                )
             question_classes = self.e_step(
                 counts, class_marginals, error_rates)
         self.y_hat = np.argmax(question_classes, axis=1)

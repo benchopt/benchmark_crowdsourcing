@@ -16,7 +16,9 @@ class Dataset(BaseDataset):
 
     def prepare_data(self):
         self.DIR = Path(__file__).parent.resolve()
-        url = "https://zenodo.org/records/7030863/files/bird_sound_training_data.zip"
+        url = """
+        https://zenodo.org/records/7030863/files/bird_sound_training_data.zip
+        """
         filename = self.DIR / "downloads" / "bird_sound_training_data.zip"
         filename.parent.mkdir(exist_ok=True)
         if not filename.exists():
@@ -39,8 +41,9 @@ class Dataset(BaseDataset):
         self.user_data = pd.read_csv(self.user_expertise, sep="\t")
         self.conv_tasks = {v: k for k, v in enumerate(
             set(self.data["candidate_id"]))}
-        self.conv_workers = {v: k for k, v in enumerate(
-            set(self.user_data["user_id"]))}
+        self.conv_workers = {
+            v: k for k, v in enumerate(set(self.user_data["user_id"]))
+            }
         is_expert = [
             1 if self.user_data.iloc[i]["birdwatching_activity_level"] == 4 else 0
             for i in range(len(self.user_data))
