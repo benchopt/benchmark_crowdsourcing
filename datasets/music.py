@@ -75,8 +75,8 @@ class Dataset(BaseDataset):
 
     def get_data(self):
         self.DIR = Path(__file__).parent.resolve()
-        self.DIRdata = self.DIR / "data" / "LabelMe"
-        if not (self.DIRdata / "answers.txt").exists():
+        self.DIRdata = self.DIR / "data" / "music_genre_classification"
+        if not (self.DIRdata / "mturk_answers.csv").exists():
             self.prepare_data()
         self.get_crowd_labels()
         return dict(
