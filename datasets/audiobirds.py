@@ -44,14 +44,14 @@ class Dataset(BaseDataset):
         self.user_data = pd.read_csv(self.user_expertise, sep="\t")
         self.conv_tasks = {
             v: k for k, v in enumerate(set(self.data["candidate_id"]))
-            }
+        }
         self.conv_workers = {
             v: k for k, v in enumerate(set(self.user_data["user_id"]))
-            }
+        }
         is_expert = [
             1 if self.user_data.iloc[i][
                 "birdwatching_activity_level"
-                ] == 4 else 0
+            ] == 4 else 0
             for i in range(len(self.user_data))
         ]
         answers = {k: {} for k in self.conv_tasks.values()}
@@ -63,7 +63,7 @@ class Dataset(BaseDataset):
             if is_expert[self.conv_workers[row["user_id"]]]:
                 truth[
                     self.conv_tasks[row["candidate_id"]]
-                    ] = int(row["annotation"])
+                ] = int(row["annotation"])
         self.ground_truth = np.array(truth).astype(int)
         self.answers = answers
 
@@ -78,7 +78,7 @@ class Dataset(BaseDataset):
                 n_worker=1,
                 n_task=1,
                 n_classes=1
-            ) 
+            )
         return dict(
             votes=self.answers,
             ground_truth=self.ground_truth,
