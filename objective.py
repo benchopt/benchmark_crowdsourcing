@@ -11,8 +11,24 @@ class Objective(BaseObjective):
     name = "crowdsourcing"
     is_convex = False  # in general
 
+    def skip(self, **kwargs):
+        if (
+            len(kwargs["votes"]) == 1
+            and len(kwargs["ground_truth"]) == 1
+            and kwargs["n_worker"] == 1
+            and kwargs["n_task"] == 1
+            and kwargs["n_classes"] == 1
+        ):
+            return True, "Skipping dataset"
+        return False, None
+
     def set_data(self, votes, ground_truth, n_task, n_worker, n_classes):
         self.votes = votes
+        import json
+
+        a = len(votes)
+        with open(f"./votes_{a}.json", "w") as f:
+            json.dump(votes, f)
         self.n_worker = n_worker
         self.ground_truth = ground_truth
         self.n_task = n_task
@@ -28,8 +44,7 @@ class Objective(BaseObjective):
             aux = np.random.permutation(len(y))
             xa = np.empty_like(x)
             xa[aux] = x
-            yhat = xa[np.maximum.reduceat(
-                aux, np.where(np.diff(y, prepend=-1))[0])]
+            yhat = xa[np.maximum.reduceat(aux, np.where(np.diff(y, prepend=-1))[0])]
         available = np.where(self.ground_truth != -1)
         self.gt = self.ground_truth[available[0]]
         yhat = np.array(yhat[available[0]]).astype(int)
@@ -51,29 +66,23 @@ class Objective(BaseObjective):
                 y_true_onehot[np.where(y_true == cls), idx] = 1
                 y_pred_onehot[np.where(y_pred == cls), idx] = 1
         micro_tp = np.sum(np.logical_and(y_true_onehot, y_pred_onehot))
-        micro_fp = np.sum(np.logical_and(
-            np.logical_not(y_true_onehot), y_pred_onehot))
-        micro_fn = np.sum(np.logical_and(
-            y_true_onehot, np.logical_not(y_pred_onehot)))
+        micro_fp = np.sum(np.logical_and(np.logical_not(y_true_onehot), y_pred_onehot))
+        micro_fn = np.sum(np.logical_and(y_true_onehot, np.logical_not(y_pred_onehot)))
 
         micro_precision = (
-            micro_tp / (micro_tp + micro_fp) if (micro_tp +
-                                                 micro_fp) > 0 else 0
+            micro_tp / (micro_tp + micro_fp) if (micro_tp + micro_fp) > 0 else 0
         )
         micro_recall = (
-            micro_tp / (micro_tp + micro_fn) if (micro_tp +
-                                                 micro_fn) > 0 else 0
+            micro_tp / (micro_tp + micro_fn) if (micro_tp + micro_fn) > 0 else 0
         )
         micro_f1 = (
-            2 * (micro_precision * micro_recall) /
-            (micro_precision + micro_recall)
+            2 * (micro_precision * micro_recall) / (micro_precision + micro_recall)
             if (micro_precision + micro_recall) > 0
             else 0
         )
         macro_f1 = 0
         for idx in range(self.n_classes):
-            tp = np.sum(np.logical_and(
-                y_true_onehot[:, idx], y_pred_onehot[:, idx]))
+            tp = np.sum(np.logical_and(y_true_onehot[:, idx], y_pred_onehot[:, idx]))
             fp = np.sum(
                 np.logical_and(
                     np.logical_not(y_true_onehot[:, idx]),

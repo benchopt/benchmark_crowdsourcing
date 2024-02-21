@@ -13,6 +13,7 @@ class Dataset(BaseDataset):
     name = "AudioBirds"
     requirements = ["numpy", "pip:zipfile", "pip:pandas", "pip:pooch"]
     install_cmd = "conda"
+    download = False
 
     def prepare_data(self):
         self.DIR = Path(__file__).parent.resolve()
@@ -20,10 +21,13 @@ class Dataset(BaseDataset):
             "bird_sound_training_data.zip"
         filename = self.DIR / "downloads" / "bird_sound_training_data.zip"
         filename.parent.mkdir(exist_ok=True)
-        if not filename.exists():
+        if not filename.exists() and self.download:
             pooch.retrieve(url=url, known_hash=None, fname=filename)
-        with zipfile.ZipFile(filename, "r") as zip_ref:
-            zip_ref.extractall(self.DIR / "downloads")
+            with zipfile.ZipFile(filename, "r") as zip_ref:
+                zip_ref.extractall(self.DIR / "downloads")
+            self.skip = True
+        else:
+            self.skip = False
         self.filename = (
             self.DIR
             / "downloads"
@@ -65,7 +69,16 @@ class Dataset(BaseDataset):
 
     def get_data(self):
         self.prepare_data()
-        self.get_crowd_labels()
+        if self.filename.exists():
+            self.get_crowd_labels()
+        elif self.skip:
+            return dict(
+                votes={0: {0: 0}},
+                ground_truth=np.array([0]),
+                n_worker=1,
+                n_task=1,
+                n_classes=1
+            ) 
         return dict(
             votes=self.answers,
             ground_truth=self.ground_truth,
