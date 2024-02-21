@@ -19,15 +19,6 @@ class Dataset(BaseDataset):
         self.DIR = Path(__file__).parent.resolve()
         url = "https://zenodo.org/records/7030863/files/" \
             "bird_sound_training_data.zip"
-        filename = self.DIR / "downloads" / "bird_sound_training_data.zip"
-        filename.parent.mkdir(exist_ok=True)
-        if not filename.exists() and self.download:
-            pooch.retrieve(url=url, known_hash=None, fname=filename)
-            with zipfile.ZipFile(filename, "r") as zip_ref:
-                zip_ref.extractall(self.DIR / "downloads")
-            self.skip = True
-        else:
-            self.skip = False
         self.filename = (
             self.DIR
             / "downloads"
@@ -38,6 +29,18 @@ class Dataset(BaseDataset):
         self.user_expertise = (
             self.DIR / "downloads" / "bird_sound_training_data" / "users.tsv"
         )
+        filename = self.DIR / "downloads" / "bird_sound_training_data.zip"
+        filename.parent.mkdir(exist_ok=True)
+        if (
+            (not self.filename.exists()) and
+                (not self.user_expertise.exists())):
+            if self.download:
+                pooch.retrieve(url=url, known_hash=None, fname=filename)
+                with zipfile.ZipFile(filename, "r") as zip_ref:
+                    zip_ref.extractall(self.DIR / "downloads")
+                self.skip = False
+            else:
+                self.skip = True
 
     def get_crowd_labels(self):
         self.data = pd.read_csv(self.filename, sep="\t")
@@ -69,8 +72,15 @@ class Dataset(BaseDataset):
 
     def get_data(self):
         self.prepare_data()
-        if self.filename.exists():
+        if self.filename.exists() and self.user_expertise.exists():
             self.get_crowd_labels()
+            return dict(
+                votes=self.answers,
+                ground_truth=self.ground_truth,
+                n_worker=205,
+                n_task=79592,
+                n_classes=2,
+            )
         elif self.skip:
             return dict(
                 votes={0: {0: 0}},
@@ -79,10 +89,3 @@ class Dataset(BaseDataset):
                 n_task=1,
                 n_classes=1
             )
-        return dict(
-            votes=self.answers,
-            ground_truth=self.ground_truth,
-            n_worker=205,
-            n_task=79592,
-            n_classes=2,
-        )
