@@ -47,7 +47,8 @@ class Solver(BaseSolver):
         question_classes = self.initialize(counts)
         for _ in range(maxiter):
             (class_marginals, error_rates) = self.m_step(counts, question_classes)
-            question_classes = self.e_step(counts, class_marginals, error_rates)
+            question_classes = self.e_step(
+                counts, class_marginals, error_rates)
         self.y_hat = np.argmax(question_classes, axis=1)
 
     def e_step(self, counts, class_marginals, error_rates):
@@ -59,7 +60,8 @@ class Solver(BaseSolver):
         for i in range(self.n_task):
             for j in range(self.n_classes):
                 estimate = class_marginals[j]
-                estimate *= np.prod(np.power(error_rates[:, j, :], counts[i, :, :]))
+                estimate *= np.prod(
+                    np.power(error_rates[:, j, :], counts[i, :, :]))
 
                 question_classes[i, j] = estimate
             if self.strategy == "H":

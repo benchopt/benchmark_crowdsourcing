@@ -11,7 +11,8 @@ with safe_import_context() as import_ctx:
 class Dataset(BaseDataset):
 
     name = "cifar10h"
-    requirements = ["pip:json", "numpy", "pip:zipfile", "pip:pooch", "pip:pandas"]
+    requirements = ["pip:json", "numpy",
+                    "pip:zipfile", "pip:pooch", "pip:pandas"]
     install_cmd = "conda"
 
     def prepare_data(self):

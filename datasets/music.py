@@ -68,7 +68,8 @@ class Dataset(BaseDataset):
             lab = self.class_to_idx[task["Answer.pred_label"]]
             if not res.get(task_id, None):
                 res[task_id] = {}
-                gt.append(self.class_to_idx[gold[gold["id"] == name]["class"].iloc[0]])
+                gt.append(
+                    self.class_to_idx[gold[gold["id"] == name]["class"].iloc[0]])
             res[task_id][worker_conv[worker]] = lab
         self.answers = res
         self.ground_truth = np.array(gt).astype(int)

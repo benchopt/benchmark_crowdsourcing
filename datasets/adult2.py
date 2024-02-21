@@ -34,7 +34,8 @@ class Dataset(BaseDataset):
             path=pooch.os_cache(f"./data/{self.name}"),
         )
 
-        labels = {key: code for (code, key) in enumerate(["G", "P", "R", "X", "B"])}
+        labels = {key: code for (code, key) in enumerate(
+            ["G", "P", "R", "X", "B"])}
         train_truth = pd.read_csv(train_truth, header=None, sep="\t")
         df = pd.read_csv(votes, header=None, sep="\t")
         df[2] = df[2].replace(labels)
@@ -59,7 +60,8 @@ class Dataset(BaseDataset):
         }
         votes = {task: {} for task in self.task_converter.values()}
         for idx, (worker, task, label) in df.iterrows():
-            votes[self.task_converter[task]][self.worker_converter[worker]] = label
+            votes[self.task_converter[task]
+                  ][self.worker_converter[worker]] = label
         self.votes = votes
 
     def get_data(self):
