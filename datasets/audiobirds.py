@@ -38,10 +38,16 @@ class Dataset(BaseDataset):
     def get_crowd_labels(self):
         self.data = pd.read_csv(self.filename, sep="\t")
         self.user_data = pd.read_csv(self.user_expertise, sep="\t")
-        self.conv_tasks = {v: k for k, v in enumerate(set(self.data["candidate_id"]))}
-        self.conv_workers = {v: k for k, v in enumerate(set(self.user_data["user_id"]))}
+        self.conv_tasks = {
+            v: k for k, v in enumerate(set(self.data["candidate_id"]))
+            }
+        self.conv_workers = {
+            v: k for k, v in enumerate(set(self.user_data["user_id"]))
+            }
         is_expert = [
-            1 if self.user_data.iloc[i]["birdwatching_activity_level"] == 4 else 0
+            1 if self.user_data.iloc[i][
+                "birdwatching_activity_level"
+                ] == 4 else 0
             for i in range(len(self.user_data))
         ]
         answers = {k: {} for k in self.conv_tasks.values()}
@@ -51,7 +57,9 @@ class Dataset(BaseDataset):
                 self.conv_workers[row["user_id"]]
             ] = int(row["annotation"])
             if is_expert[self.conv_workers[row["user_id"]]]:
-                truth[self.conv_tasks[row["candidate_id"]]] = int(row["annotation"])
+                truth[
+                    self.conv_tasks[row["candidate_id"]]
+                    ] = int(row["annotation"])
         self.ground_truth = np.array(truth).astype(int)
         self.answers = answers
 

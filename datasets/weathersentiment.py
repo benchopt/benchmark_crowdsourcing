@@ -13,8 +13,8 @@ class Dataset(BaseDataset):
 
     def prepare_data(self):
         self.data = pd.read_csv(
-            "https://eprints.soton.ac.uk/376543/1/" \
-                "WeatherSentiment_amt.csv",
+            "https://eprints.soton.ac.uk/376543/1/"
+            "WeatherSentiment_amt.csv",
             header=None,
         )
         self.data.columns = ["worker", "task", "label", "gold", "time"]
