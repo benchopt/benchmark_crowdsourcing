@@ -14,9 +14,11 @@ class Solver(BaseSolver):
     name = "peerannot"  # majority vote
     install_cmd = "conda"
     requirements = ["pip:peerannot", "pathlib"]
-
+    sampling_strategy = "iteration"
     parameters = {
-        "strategy": ["MV", "DS", "GLAD", "WDS", "DSWC"],
+        "strategy": [
+            "MV", "DS", "GLAD", "WDS", "Wawa", "TwoThird", "PlantNet"
+            ],
     }
 
     def skip(
@@ -42,18 +44,32 @@ class Solver(BaseSolver):
         self.n_task = n_task
         self.n_classes = n_classes
         strat = agg_strategies[self.strategy]
-        self.strat = strat(
-            self.votes,
-            n_workers=self.n_worker,
-            n_task=self.n_task,
-            n_classes=self.n_classes,
-            dataset=folder,
-        )
+        if self.strategy == "PlantNet":
+            self.strat = strat(
+                self.votes,
+                n_workers=self.n_worker,
+                n_task=self.n_task,
+                n_classes=self.n_classes,
+                dataset=folder,
+                AI="ignored",
+                authors=None,
+                scores=None,
+                alpha=0.5,
+                beta=0.2,
+            )
+        else:
+            self.strat = strat(
+                self.votes,
+                n_workers=self.n_worker,
+                n_task=self.n_task,
+                n_classes=self.n_classes,
+                dataset=folder,
+            )
 
     @profile
     def run(self, maxiter):
         if hasattr(self.strat, "run"):
-            if self.strategy in ["WDS"]:
+            if self.strategy in ["WDS", "WAWA", "MV", "TwoThird"]:
                 self.strat.run()
             else:
                 self.strat.run(maxiter=maxiter)

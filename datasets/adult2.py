@@ -34,17 +34,17 @@ class Dataset(BaseDataset):
             path=pooch.os_cache(f"./data/{self.name}"),
         )
 
-        labels = {
-            key: code for (code, key) in enumerate(["G", "P", "R", "X", "B"])
-        }
+        labels = {key: code for (code, key) in enumerate(
+            ["G", "P", "R", "X", "B"])}
         train_truth = pd.read_csv(train_truth, header=None, sep="\t")
         df = pd.read_csv(votes, header=None, sep="\t")
         df[2] = df[2].replace(labels)
         # handling tasks and partial ground truth
         n_task = df[1].nunique()
         self.task_converter = {
-            taskid: taskrank
-            for taskid, taskrank in zip(df[1].unique(), range(n_task))
+            taskid: taskrank for taskid, taskrank in zip(
+                df[1].unique(), range(n_task)
+                )
         }
         gold_truth = train_truth[
             train_truth.set_index([0]).index.isin(df.set_index([1]).index)
@@ -62,9 +62,8 @@ class Dataset(BaseDataset):
         }
         votes = {task: {} for task in self.task_converter.values()}
         for idx, (worker, task, label) in df.iterrows():
-            votes[self.task_converter[task]][
-                self.worker_converter[worker]
-            ] = label
+            votes[self.task_converter[task]
+                  ][self.worker_converter[worker]] = label
         self.votes = votes
 
     def get_data(self):
